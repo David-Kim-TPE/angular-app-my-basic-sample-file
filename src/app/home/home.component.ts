@@ -12,16 +12,112 @@
  * limitations under the License.
  */
 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { HomeService } from './home.service';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.scss']
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
+  private authenticated = false;
+  private loggedIn = false;
 
-  constructor () {
+  private currentUser;
+  private cardUrl;
+  private signUpInProgress = false;
+
+  private signUp = {
+    id: '',
+    firstName: '',
+    surname: '',
+  };
+
+  constructor(private route: ActivatedRoute,
+    private router: Router,
+    private homeService: HomeService) {
   }
 
+  ngOnInit() {
+    console.log('onInit()');
+    this.route
+      .queryParams
+      .subscribe((queryParams) => {
+        const passportloggedIn = queryParams['loggedIn'];
+        if (passportloggedIn) {
+          this.authenticated = true;
+          console.log('authenticated: '+ this.authenticated);
+          console.log('passportloggedIn: ' + passportloggedIn);
+          return this.router.navigate(['/'])
+            .then(() => {
+              return this.checkWallet();
+            });
+          
+         //this.checkWallet();
+        }
+      });
+      console.log('this.loggedIn: ' + this.loggedIn);
+      console.log('this.authenticated: ' + this.authenticated);
+  }
+
+  checkWallet() {
+    console.log('checkWalet()');
+    return this.homeService.checkWallet()
+      .then((results) => {
+        console.log('checkWallet() results: ', results)
+        if (results['length'] > 0) {
+          this.loggedIn = true;
+          const cardName = results[0].name;
+          console.log('cardName: ' + cardName);
+          console.log('this.loggedIn: ' + this.loggedIn);
+          
+          //return this.getCurrentUserAndCard(cardName);
+          return this.getCurrentUser();
+          
+        } 
+      })
+      .catch(error => { 
+        this.loggedIn = false;
+        console.log('checkWalet()');
+        console.log('this.loggedIn: ' + this.loggedIn);
+        console.log('this.authenticated: ' + this.authenticated);
+        console.log('error: ' + error) 
+      }
+      );
+  }
+
+  onSignUp() {
+    this.signUpInProgress = true;
+    return this.homeService.signUp(this.signUp)
+      .then(() => {
+        return this.getCurrentUser();
+      })
+      .then(() => {
+        this.loggedIn = true;
+        this.signUpInProgress = false;
+      });
+  }
+
+  getCurrentUser() {
+    return this.homeService.getCurrentUser()
+      .then((currentUser) => {
+        console.log('getCurrentUser(): ', currentUser);
+        this.currentUser = currentUser;
+      });
+  }
+
+  getUserCard(cardName) {
+    return this.homeService.getUserCard(cardName)
+      .then((cardUrl) => {
+        console.log('cardUrl: ' + cardUrl);
+        this.cardUrl = cardUrl;
+      })
+  }
+
+  getCurrentUserAndCard(walletName) {
+    this.getCurrentUser();
+    this.getUserCard(walletName);
+  }
 }

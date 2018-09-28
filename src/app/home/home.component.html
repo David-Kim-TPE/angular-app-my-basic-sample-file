@@ -1,18 +1,72 @@
-<!--
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
 
- http://www.apache.org/licenses/LICENSE-2.0
 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
--->	
-<html>
-  <body> 
-    <app-simple-demo></app-simple-demo>
-  </body>
-</html>
+<section *ngIf="!authenticated">
+  <a href="http://localhost:3000/auth/google">Sign in with Google</a>
+</section>
+
+<section *ngIf="authenticated">
+  <a href="http://localhost:3000/auth/logout">Log out</a>
+</section>
+
+<section *ngIf="authenticated && !loggedIn">
+  <h2>Sign up</h2>
+  <form (ngSubmit)="onSignUp()" #signupForm="ngForm">
+    <table>
+      <colgroup>
+        <col span="1" style="width: 11%;">
+        <col span="1" style="width: 89%;">
+      </colgroup>
+      <tr>
+        <td>
+          <label>ID</label>
+        </td>
+        <td>
+          <input type="text" [(ngModel)]="signUp.id" #id="ngModel" name="id">
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label>First Name</label>
+        </td>
+        <td>
+          <input type="text" [(ngModel)]="signUp.firstName" #firstName="ngModel" name="firstName">
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label>Surname</label>
+        </td>
+        <td>
+          <input type="text" [(ngModel)]="signUp.surname" #surname="ngModel" name="surname">
+        </td>
+      </tr>
+    </table>
+    <button type="submit"
+            class="primary">
+      <div *ngIf="!signUpInProgress">
+        <span>Sign up</span>
+      </div>
+      <div *ngIf="signUpInProgress" class="ibm-spinner-indeterminate small loop">
+        <div class="loader">
+          <svg class="circular" viewBox="25 25 50 50">
+            <circle class="circle-path" cx="50" cy="50" r="20"/>
+          </svg>
+        </div>
+      </div>
+    </button>
+  </form>
+</section>
+
+<section *ngIf="authenticated && loggedIn" class="welcome">
+  <h1>
+    Welcome to My-Basic-Sample
+  </h1>
+  <div *ngIf="currentUser" class="user-info">
+    <h2>{{currentUser.split('#')[1]}}</h2>
+    <a href="{{cardUrl}}" class="card">
+      <span class="card--name">{{currentUser.split('#')[1]}}</span>
+      <span class="card--network-name">{{currentUser.split('#')[2]}}</span>
+    </a>
+  </div>
+</section>
+

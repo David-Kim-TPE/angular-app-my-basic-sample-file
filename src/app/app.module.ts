@@ -21,12 +21,14 @@ import { DataService } from './data.service';
 import { FileService } from './file.service';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
+import { HttpClientModule } from '@angular/common/http';
 
 import { SampleAssetComponent } from './SampleAsset/SampleAsset.component';
 import { SampleParticipantComponent } from './SampleParticipant/SampleParticipant.component';
 import { SampleTransactionComponent } from './SampleTransaction/SampleTransaction.component';
 import { FileUploadComponent } from './file-upload/file-upload.component';
 import { SimpleDemoComponent } from './simple-demo/simple-demo.component';
+import { HomeService } from './home/home.service';
 
   @NgModule({
   declarations: [
@@ -43,11 +45,13 @@ import { SimpleDemoComponent } from './simple-demo/simple-demo.component';
     FormsModule,
     ReactiveFormsModule,
     HttpModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule
   ],
   providers: [
     DataService,
-    FileService
+    FileService,
+    HomeService
   ],
   bootstrap: [AppComponent]
 })
